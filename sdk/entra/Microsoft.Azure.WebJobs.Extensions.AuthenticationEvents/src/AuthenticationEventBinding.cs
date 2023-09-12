@@ -97,6 +97,9 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents
                 AuthenticationEventMetadata eventMetadata = GetEventAndValidateSchema(payload);
 
                 eventResponseHandler.Request = GetRequestForEvent(request, payload, eventMetadata, Claims);
+
+                EventTriggerMetrics.SetMetricHeaders(eventResponseHandler.Request);
+
                 return new TriggerData(new AuthenticationEventValueBinder(eventResponseHandler.Request, _authEventTriggerAttr), GetBindingData(context, value, eventResponseHandler))
                 {
                     ReturnValueProvider = eventResponseHandler
@@ -120,7 +123,12 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents
         /// <seealso cref="AuthenticationEventResponseHandler" />
         private TriggerData GetFaultyRequest(ValueBindingContext context, object value, HttpRequestMessage request, AuthenticationEventResponseHandler eventResponseHandler, Exception ex)
         {
-            eventResponseHandler.Request = _parameterInfo.ParameterType == typeof(string) ? new EmptyRequest(request) : AuthenticationEventMetadata.CreateEventRequest(request, _parameterInfo.ParameterType, null);
+            eventResponseHandler.Request = _parameterInfo.ParameterType == typeof(string) ?
+                new EmptyRequest(request) :
+                AuthenticationEventMetadata.CreateEventRequest(request, _parameterInfo.ParameterType, null);
+
+            EventTriggerMetrics.SetMetricHeaders(eventResponseHandler.Request);
+
             eventResponseHandler.Request.StatusMessage = ex.Message;
 
             eventResponseHandler.Request.RequestStatus = ex switch
@@ -183,7 +191,12 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents
             }
 
             requestEvent.StatusMessage = ex == null ? AuthenticationEventResource.Status_Good : ex.Message;
-            requestEvent.RequestStatus = ex == null ? RequestStatusType.Successful : ex is UnauthorizedAccessException ? RequestStatusType.TokenInvalid : RequestStatusType.Failed;
+            requestEvent.RequestStatus =
+                ex == null
+                ? RequestStatusType.Successful
+                : ex is UnauthorizedAccessException
+                    ? RequestStatusType.TokenInvalid
+                    : RequestStatusType.Failed;
 
             return requestEvent;
         }
