@@ -1,14 +1,14 @@
 # Release History
 
-## 1.35.0-beta.1 (Unreleased)
+## 1.35.0 (2023-09-07)
 
 ### Features Added
 
+- Expand the set of supported `DynamicData` property types to included heterogeneous arrays of allowed types.
+
 ### Breaking Changes
 
-### Bugs Fixed
-
-### Other Changes
+- Added the nullability annotation to `NullableResponse<T>.Value` to indicate that it is a nullable type.
 
 ## 1.34.0 (2023-07-11)
 
