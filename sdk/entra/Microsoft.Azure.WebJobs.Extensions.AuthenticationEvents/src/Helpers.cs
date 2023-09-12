@@ -10,7 +10,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
-using System.Reflection;
 using System.Text;
 
 namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents
