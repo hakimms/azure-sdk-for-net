@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Framework;
-using Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.TokenIssuanceStart;
 using NUnit.Framework;
 using System.Linq;
 using System.Net.Http;
@@ -15,25 +13,18 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Tests
         [Test]
         public void TestSetMetricHeadersNull()
         {
-            AuthenticationEventRequestBase requestBase = null;
-            EventTriggerMetrics.SetMetricHeaders(requestBase);
-            Assert.IsNull(requestBase, "Verify AuthenticationEventRequestBase is not set to anything when null.");
+            HttpResponseMessage message = null;
+            EventTriggerMetrics.SetMetricHeaders(message);
+            Assert.IsNull(message, "Verify AuthenticationEventRequestBase is not set to anything when null.");
         }
 
         [Test]
         public  void TestSetMetricHeaders()
         {
-            HttpRequestMessage httpRequestMessage = new()
-            {
-                RequestUri = new System.Uri("https://www.helloworld.com?test=1")
-            };
+            HttpResponseMessage message = new() { };
+            EventTriggerMetrics.SetMetricHeaders(message);
 
-            AuthenticationEventRequestBase requestBase = new TokenIssuanceStartRequest(httpRequestMessage);
-
-            EventTriggerMetrics.SetMetricHeaders(requestBase);
-
-            var headers = requestBase.HttpRequestMessage.Headers;
-
+            var headers = message.Headers;
             Assert.IsTrue(headers.Contains(EventTriggerMetrics.HeaderKeys.Platform));
             Assert.IsTrue(headers.Contains(EventTriggerMetrics.HeaderKeys.ProductVersion));
             Assert.IsTrue(headers.Contains(EventTriggerMetrics.HeaderKeys.Runtime));
@@ -46,20 +37,15 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Tests
         [Test]
         public void TestSetMetricHeadersOverride()
         {
-            HttpRequestMessage httpRequestMessage = new()
-            {
-                RequestUri = new System.Uri("https://www.helloworld.com?test=1")
-            };
-
-            AuthenticationEventRequestBase requestBase = new TokenIssuanceStartRequest(httpRequestMessage);
+            HttpResponseMessage message = new() { };
 
             EventTriggerMetrics.Platform = "linux";
             EventTriggerMetrics.ProductVersion = "10.0.0";
             EventTriggerMetrics.RunTime = "JS";
 
-            EventTriggerMetrics.SetMetricHeaders(requestBase);
+            EventTriggerMetrics.SetMetricHeaders(message);
 
-            var headers = requestBase.HttpRequestMessage.Headers;
+            var headers = message.Headers;
 
             Assert.IsTrue(headers.Contains(EventTriggerMetrics.HeaderKeys.Platform));
             Assert.IsTrue(headers.Contains(EventTriggerMetrics.HeaderKeys.ProductVersion));

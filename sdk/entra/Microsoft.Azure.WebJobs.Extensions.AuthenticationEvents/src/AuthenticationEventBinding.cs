@@ -85,6 +85,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents
         {
             var request = (HttpRequestMessage)value;
             AuthenticationEventResponseHandler eventResponseHandler = (AuthenticationEventResponseHandler)request.Properties[AuthenticationEventResponseHandler.EventResponseProperty];
+
             try
             {
                 if (request == null)
@@ -97,8 +98,6 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents
                 AuthenticationEventMetadata eventMetadata = GetEventAndValidateSchema(payload);
 
                 eventResponseHandler.Request = GetRequestForEvent(request, payload, eventMetadata, Claims);
-
-                EventTriggerMetrics.SetMetricHeaders(eventResponseHandler.Request);
 
                 return new TriggerData(new AuthenticationEventValueBinder(eventResponseHandler.Request, _authEventTriggerAttr), GetBindingData(context, value, eventResponseHandler))
                 {
@@ -126,8 +125,6 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents
             eventResponseHandler.Request = _parameterInfo.ParameterType == typeof(string) ?
                 new EmptyRequest(request) :
                 AuthenticationEventMetadata.CreateEventRequest(request, _parameterInfo.ParameterType, null);
-
-            EventTriggerMetrics.SetMetricHeaders(eventResponseHandler.Request);
 
             eventResponseHandler.Request.StatusMessage = ex.Message;
 

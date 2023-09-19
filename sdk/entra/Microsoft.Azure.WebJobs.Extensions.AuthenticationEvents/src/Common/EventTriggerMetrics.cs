@@ -5,6 +5,7 @@ using Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Framework;
 using System.Reflection;
 using System;
 using System.Runtime.InteropServices;
+using System.Net.Http;
 
 namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents
 {
@@ -46,11 +47,11 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents
             public const string Runtime = "ms-runtime";
         }
 
-        internal static void SetMetricHeaders(AuthenticationEventRequestBase requestBase)
+        internal static void SetMetricHeaders(HttpResponseMessage message)
         {
-            if (requestBase?.HttpRequestMessage != null)
+            if (message != null)
             {
-                var headers = requestBase.HttpRequestMessage.Headers;
+                var headers = message.Headers;
 
                 headers.Add(HeaderKeys.Platform, Platform);
                 headers.Add(HeaderKeys.ProductVersion, ProductVersion);
