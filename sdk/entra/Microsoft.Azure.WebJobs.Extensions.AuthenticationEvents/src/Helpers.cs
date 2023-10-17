@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Framework;
-using Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.TokenIssuanceStart.Actions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,6 +9,9 @@ using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Framework;
+using Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.TokenIssuanceStart.Actions;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents
 {
@@ -46,16 +47,21 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException(AuthenticationEventResource.Ex_Event_Missing, ex);
+                throw new RequestValidationException(ex.Message, ex.InnerException);
             }
         }
 
         internal static HttpResponseMessage HttpErrorResponse(Exception ex)
         {
-            return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+            var response = new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
             {
                 Content = new StringContent(GetFailedRequestPayload(ex))
             };
+
+            // Set the metrics on header
+            EventTriggerMetrics.SetMetricHeaders(response);
+
+            return response;
         }
 
         internal static string GetFailedRequestPayload(Exception ex)
@@ -111,9 +117,10 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents
                 return false;
             }
 
-            input = input.Trim();
-            return (input.StartsWith("{", StringComparison.OrdinalIgnoreCase) && input.EndsWith("}", StringComparison.OrdinalIgnoreCase))
-                || (input.StartsWith("[", StringComparison.OrdinalIgnoreCase) && input.EndsWith("]", StringComparison.OrdinalIgnoreCase));
+            // try parsing input to json object
+            var jsonObj = JToken.Parse(input);
+
+            return jsonObj != null;
         }
 
         internal static AuthenticationEventAction GetEventActionForActionType(string actionType)

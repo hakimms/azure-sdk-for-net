@@ -34,6 +34,11 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents
         [Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.AuthenticationEventMetadataAttribute(typeof(Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.TokenIssuanceStart.TokenIssuanceStartRequest), "microsoft.graph.authenticationEvent.TokenIssuanceStart", "TokenIssuanceStart", "CloudEventActionableTemplate.json")]
         TokenIssuanceStart = 0,
     }
+    public static partial class EventTriggerMetrics
+    {
+        public static string MetricsHeader;
+        public static string ProductName;
+    }
     public enum EventType
     {
         OnTokenIssuanceStart = 0,
@@ -44,6 +49,11 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents
         TokenInvalid = 1,
         Successful = 2,
         ValidationError = 3,
+    }
+    public partial class RequestValidationException : System.Exception
+    {
+        public RequestValidationException(string message) { }
+        public RequestValidationException(string message, System.Exception innerException) { }
     }
     public partial class ResponseValidationException : System.Exception
     {
@@ -128,6 +138,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Framework
     public abstract partial class CloudEventRequest<TResponse, TData> : Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Framework.AuthenticationEventRequest<TResponse, TData> where TResponse : Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Framework.AuthenticationEventResponse, new() where TData : Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Framework.CloudEventData
     {
         internal CloudEventRequest() { }
+        [System.ComponentModel.DataAnnotations.RequiredAttribute]
         [System.Text.Json.Serialization.JsonPropertyNameAttribute("oDataType")]
         public string ODataType { get { throw null; } set { } }
         [System.ComponentModel.DataAnnotations.RequiredAttribute]

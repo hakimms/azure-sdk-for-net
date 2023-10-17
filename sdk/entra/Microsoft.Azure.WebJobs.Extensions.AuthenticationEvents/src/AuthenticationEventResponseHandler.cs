@@ -1,12 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.AspNetCore.Http;
-using Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Framework;
-using Microsoft.Azure.WebJobs.Host.Bindings;
 using System;
 using System.Buffers;
-using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.IO;
 using System.Net.Http;
@@ -14,6 +10,10 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Framework;
+using Microsoft.Azure.WebJobs.Host.Bindings;
+using Newtonsoft.Json;
 
 namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents
 {
@@ -24,9 +24,24 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents
         /// <summary>The response property.</summary>
         internal const string EventResponseProperty = "$event$response";
 
+        private AuthenticationEventResponse _response;
+
         /// <summary>Gets or sets the action result.</summary>
         /// <value>The action result.</value>
-        public AuthenticationEventResponse Response { get; internal set; }
+        public AuthenticationEventResponse Response
+        {
+            get => _response;
+            internal set
+            {
+                if (value != null)
+                {
+                    _response = value;
+
+                    // Set metrics on the headers for the response
+                    EventTriggerMetrics.SetMetricHeaders(_response);
+                }
+            }
+        }
 
         /// <summary>Gets the type.</summary>
         /// <value>The type.</value>
@@ -69,15 +84,13 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents
                     AuthenticationEventResponse response = Request.GetResponseObject();
                     if (response == null)
                     {
-                        throw new InvalidOperationException(AuthenticationEventResource.Ex_Missing_Request_Response);
+                        throw new RequestValidationException(AuthenticationEventResource.Ex_Missing_Request_Response);
                     }
 
                     Response = GetActionResult(result, response);
                 }
 
-				Response.ValidateActions();
-
-				if (Response.StatusCode == System.Net.HttpStatusCode.OK)
+                if (Response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
                     Response.Validate();
                     Response.Invalidate();
@@ -159,7 +172,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents
 
             return responseType.BaseType.GetGenericTypeDefinition() == typeof(ActionableResponse<>) ||
                    responseType.BaseType.GetGenericTypeDefinition() == typeof(ActionableCloudEventResponse<>) ?
-                     (AuthenticationEventResponse)JsonSerializer.Deserialize(response.ToString(), responseType, GetSerializerOptions()) :
+                     (AuthenticationEventResponse)System.Text.Json.JsonSerializer.Deserialize(response.ToString(), responseType, GetSerializerOptions()) :
                      null;
         }
 
@@ -211,9 +224,19 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents
 
         internal static AuthenticationEventJsonElement GetJsonObjectFromString(string result)
         {
-            return !Helpers.IsJson(result)
-                ? throw new InvalidCastException(AuthenticationEventResource.Ex_Invalid_Return)
-                : new AuthenticationEventJsonElement(result);
+            try
+            {
+                if (!Helpers.IsJson(result))
+                {
+                    throw new ResponseValidationException(AuthenticationEventResource.Ex_Invalid_Return);
+                }
+            }
+            catch (JsonReaderException ex)
+            {
+                throw new ResponseValidationException($"{AuthenticationEventResource.Ex_Invalid_Return}: {ex.Message}", ex.InnerException);
+            }
+
+            return new AuthenticationEventJsonElement(result);
         }
 
         internal static AuthenticationEventResponse GetAuthEventFromJObject(AuthenticationEventJsonElement result, AuthenticationEventResponse response)
