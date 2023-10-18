@@ -30,7 +30,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents
         public AuthenticationEventResponse Response
         {
             get => _response;
-            internal set
+            private set
             {
                 if (value != null)
                 {
@@ -41,6 +41,8 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents
                 }
             }
         }
+
+        internal AuthenticationEventResponseHandler() { }
 
         /// <summary>Gets the type.</summary>
         /// <value>The type.</value>
