@@ -7,6 +7,8 @@ using System.Net.Http;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
+using Microsoft.Azure.Entra.Authentication;
+
 namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Framework
 {
     /// <summary>The base class for all typed event requests and its related response and data model.</summary>
@@ -15,8 +17,8 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Framework
     /// <seealso cref="AuthenticationEventResponse" />
     /// <seealso cref="AuthenticationEventData" />
     public abstract class AuthenticationEventRequest<TResponse, TData> : AuthenticationEventRequestBase
-        where TResponse : AuthenticationEventResponse , new()
-        where TData : AuthenticationEventData
+        where TResponse : AuthenticationEventResponse, new()
+        where TData : CustomExtensionData
     {
         /// <summary>Initializes a new instance of the <see cref="AuthenticationEventRequest{T, K}" /> class.</summary>
         /// <param name="request">The request.</param>
@@ -29,7 +31,6 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Framework
 
         /// <summary>Gets or sets the related EventData model.</summary>
         /// <value>The Json payload.</value>
-        ///
         [JsonPropertyName("data")]
         [Required]
         public TData Data { get; set; }

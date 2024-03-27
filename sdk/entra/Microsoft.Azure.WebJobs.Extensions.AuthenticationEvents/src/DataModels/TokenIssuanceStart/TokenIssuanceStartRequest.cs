@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Framework;
-using Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.TokenIssuanceStart.Data;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json.Serialization;
+
+using Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Framework;
 
 namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.TokenIssuanceStart
 {
@@ -16,7 +16,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.TokenIssuanceS
     /// </summary>
     ///
     [Serializable]
-    public class TokenIssuanceStartRequest : CloudEventRequest<OnTokenIssuanceStartResponseData, TokenIssuanceStartData>
+    public class TokenIssuanceStartRequest : CloudEventRequest<OnTokenIssuanceStartResponseData, Microsoft.Azure.Entra.Authentication.OnTokenIssuanceStartCalloutRequest>
     {
         /// <summary>Initializes a new instance of the <see cref="TokenIssuanceStartRequest" /> class.</summary>
         /// <param name="request">The incoming HTTP request message.</param>
