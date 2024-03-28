@@ -1,30 +1,38 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Framework.Validators;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-
-using Microsoft.Azure.Entra.Authentication;
+using System.Web;
 
 namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Framework
 {
     /// <summary>The base class for all typed event requests.</summary>
-    public abstract class AuthenticationEventRequestBase<TRequest, TResponse>
-        where TRequest : CustomExtensionCalloutRequest
-        where TResponse : CustomExtensionCalloutResponse
+    public abstract class AuthenticationEventRequestBase
     {
-        /// <summary>
-        /// The request from the incoming HTTP request message.
-        /// </summary>
-        public TRequest Request { get; set; }
+        private readonly Dictionary<string, string> queryParameters;
+        /// <summary>Initializes a new instance of the <see cref="AuthenticationEventRequestBase" /> class.</summary>
+        /// <param name="request">The HTTP request message.</param>
+        internal AuthenticationEventRequestBase(HttpRequestMessage request)
+        {
+            HttpRequestMessage = request;
+            queryParameters = HttpUtility.ParseQueryString(request.RequestUri.Query).ToDictionary();
+        }
 
-        /// <summary>
-        /// The response for the event request.
-        /// </summary>
-        public TResponse Response { get; set; }
+        internal HttpRequestMessage HttpRequestMessage { get; set; }
+
+        /// <summary>Gets or sets the type.</summary>
+        /// <value>The type.</value>
+        [JsonPropertyName("type")]
+        [Required]
+        [AuthEventIdentifier]
+        public string Type { get; set; } = string.Empty;
 
         /// <summary>Gets or sets the request status.</summary>
         /// <value>The request status.</value>
@@ -38,6 +46,11 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Framework
         [JsonPropertyName("statusMessage")]
         [Required]
         public string StatusMessage { get; set; } = string.Empty;
+
+        /// <summary>Gets the query parameters passed from the http request message.</summary>
+        /// <value>The query parameters.</value>
+        [JsonPropertyName("queryParameters")]
+        public Dictionary<string, string> QueryParameters { get { return queryParameters; } }
 
         /// <summary>Once an instance is created the framework will pass addition arguments to the created sub class for use.</summary>
         /// <param name="args">The arguments.</param>
@@ -54,7 +67,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Framework
             return JsonSerializer.Serialize((object)this, options);
         }
 
-        internal virtual JsonSerializerOptions JsonSerializerOptions => new JsonSerializerOptions() { WriteIndented = true, PropertyNameCaseInsensitive = true };
+       internal virtual JsonSerializerOptions JsonSerializerOptions => new JsonSerializerOptions() { WriteIndented = true, PropertyNameCaseInsensitive = true };
 
         internal abstract AuthenticationEventResponse GetResponseObject();
 

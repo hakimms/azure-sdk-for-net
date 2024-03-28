@@ -5,19 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Http;
-
-using Microsoft.Azure.Entra.Authentication;
+using System.Text;
 
 namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Framework
 {
     /// <summary>Represents an event response based on the event type and request.</summary>
     public abstract class AuthenticationEventResponse : HttpResponseMessage
     {
-        /// <summary>
-        /// Response data
-        /// </summary>
-        public CustomExtensionCalloutResponseData Data { get; set; }
-
         // internal HttpResponseMessage HttpResponseMessage { get; set; }
         /// <summary>Invalidates this instance. (Builds the Json payload).</summary>
         internal abstract void Invalidate();
@@ -26,9 +20,11 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Framework
         [Required]
         public string Body
         {
-            get => Data.ToString();
-
-            private set => Data = new CustomExtensionCalloutResponseData(value);
+            get { return Content == null ? string.Empty : Content.ReadAsStringAsync()?.Result; }
+            set
+            {
+                Content = new StringContent(value, Encoding.UTF8, "application/json");
+            }
         }
 
         /// <summary>Creates an instance of a sub class of EventResponse based on type and assigns the json schema and payload to the newly created instance.</summary>
