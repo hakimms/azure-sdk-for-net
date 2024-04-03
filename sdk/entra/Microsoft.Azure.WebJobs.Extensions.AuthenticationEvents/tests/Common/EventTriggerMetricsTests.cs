@@ -20,7 +20,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Tests
             Assert.DoesNotThrow(() => EventTriggerMetrics.Instance.SetMetricHeaders(message));
             Assert.IsNull(
                 anObject: message,
-                message: "Verify AuthenticationEventRequestBase is not set to anything when null.");
+                message: "Verify AuthenticationEvent is not set to anything when null.");
         }
 
         [Test]

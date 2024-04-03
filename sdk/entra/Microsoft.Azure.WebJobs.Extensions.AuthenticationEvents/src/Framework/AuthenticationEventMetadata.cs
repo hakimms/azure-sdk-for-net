@@ -29,9 +29,9 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Framework
         /// <param name="payload">The Json payload.</param>
         /// <param name="args">The arguments.</param>
         /// <returns>A newly create EventRequest with related EventResponse and EventData based on event type.</returns>
-        /// <seealso cref="AuthenticationEventRequestBase" />
+        /// <seealso cref="AuthenticationEvent" />
         /// <seealso cref="AuthenticationEventData" />
-        internal AuthenticationEventRequestBase CreateEventRequestValidate(HttpRequestMessage request, string payload, params object[] args)
+        internal AuthenticationEvent CreateEventRequestValidate(HttpRequestMessage request, string payload, params object[] args)
         {
             return CreateEventRequest(request, payload, true, args);
         }
@@ -42,11 +42,11 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Framework
         /// <param name="validate">Validate the generated object.</param>
         /// <param name="args">The arguments.</param>
         /// <returns>A newly create EventRequest with related EventResponse and EventData based on event type.</returns>
-        /// <seealso cref="AuthenticationEventRequestBase" />
+        /// <seealso cref="AuthenticationEvent" />
         /// <seealso cref="AuthenticationEventData" />
-        internal AuthenticationEventRequestBase CreateEventRequest(HttpRequestMessage request, string payload, bool validate, params object[] args)
+        internal AuthenticationEvent CreateEventRequest(HttpRequestMessage request, string payload, bool validate, params object[] args)
         {
-            AuthenticationEventRequestBase eventRequest = (AuthenticationEventRequestBase)Activator.CreateInstance(RequestType, new object[] { request });
+            AuthenticationEvent eventRequest = (AuthenticationEvent)Activator.CreateInstance(RequestType, new object[] { request });
             PropertyInfo responseInfo = eventRequest.GetType().GetProperty("Response");
             PropertyInfo dataInfo = eventRequest.GetType().GetProperty("Data");
 
@@ -89,7 +89,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Framework
             return eventRequest;
         }
 
-        internal static AuthenticationEventRequestBase CreateEventRequest(HttpRequestMessage request, Type type, params object[] args)
+        internal static AuthenticationEvent CreateEventRequest(HttpRequestMessage request, Type type, params object[] args)
         {
             foreach (EventDefinition eventDefinition in Enum.GetValues(typeof(EventDefinition)))
             {

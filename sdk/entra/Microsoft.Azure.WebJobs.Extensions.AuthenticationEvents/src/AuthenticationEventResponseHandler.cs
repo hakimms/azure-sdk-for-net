@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Framework;
 using Microsoft.Azure.WebJobs.Host.Bindings;
@@ -50,7 +51,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents
 
         /// <summary>Gets or sets the request.</summary>
         /// <value>The associated request.</value>
-        public AuthenticationEventRequestBase Request { get; internal set; }
+        public AuthenticationEvent Request { get; internal set; }
 
         /// <summary>Gets the value asynchronous.</summary>
         /// <returns>
@@ -110,7 +111,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents
             AuthenticationEventJsonElement jResult;
 
             //If the request was unsuccessful we return the IActionResult based on the error and do no further processing.
-            if (Request.RequestStatus != RequestStatusType.Successful)
+            if (Request.AuthenticationEventStatus != RequestStatusType.Successful)
             {
                 return Request.Failed(null, true).Result;
             }

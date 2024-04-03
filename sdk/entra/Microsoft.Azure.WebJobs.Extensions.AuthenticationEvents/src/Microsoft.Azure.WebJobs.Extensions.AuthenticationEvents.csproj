@@ -9,8 +9,8 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Azure.WebJobs" />
 		<PackageReference Include="Microsoft.AspNetCore.Http" />
-		<PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect"/>
-		<PackageReference Include="Microsoft.IdentityModel.Tokens"/>
+		<PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" />
+		<PackageReference Include="Microsoft.IdentityModel.Tokens" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" />
 	</ItemGroup>
 
@@ -50,7 +50,15 @@
 
 
 	<ItemGroup>
+		<Folder Include="DataModels\Data\RequestDataModels\" />
 		<Folder Include="Help\" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <Reference Include="Microsoft.Azure.Entra.Authentication">
+	    <HintPath>..\..\..\..\artifacts\bin\Microsoft.Azure.Entra.Authentication\Debug\netstandard2.0\Microsoft.Azure.Entra.Authentication.dll</HintPath>
+	  </Reference>
 	</ItemGroup>
 
 
