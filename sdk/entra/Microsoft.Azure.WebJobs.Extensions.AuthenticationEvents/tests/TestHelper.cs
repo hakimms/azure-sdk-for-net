@@ -105,7 +105,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Tests
                     {
 
                         Response = CreateTokenIssuanceStartResponse(),
-                        RequestStatus = RequestStatusType.Successful
+                        AuthenticationEventStatus = RequestStatusType.Successful
                     };
 
                     action(eventsResponseHandler);

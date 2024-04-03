@@ -3,9 +3,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Text.Json.Serialization;
 
+using Microsoft.Azure.Entra.Authentication;
 using Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Framework;
 
 namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.TokenIssuanceStart
@@ -16,12 +16,8 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.TokenIssuanceS
     /// </summary>
     ///
     [Serializable]
-    public class TokenIssuanceStartRequest : CloudEventRequest<OnTokenIssuanceStartResponseData, Microsoft.Azure.Entra.Authentication.OnTokenIssuanceStartCalloutRequest>
+    public class TokenIssuanceStartRequest : CloudEventRequest<CustomExtensionCalloutResponse, OnTokenIssuanceStartCalloutRequestData>
     {
-        /// <summary>Initializes a new instance of the <see cref="TokenIssuanceStartRequest" /> class.</summary>
-        /// <param name="request">The incoming HTTP request message.</param>
-        public TokenIssuanceStartRequest(HttpRequestMessage request) : base(request) { }
-
         /// <summary>Gets or sets the token claims.</summary>
         /// <value>The token claims.</value>
         [JsonPropertyName("tokenClaims")]

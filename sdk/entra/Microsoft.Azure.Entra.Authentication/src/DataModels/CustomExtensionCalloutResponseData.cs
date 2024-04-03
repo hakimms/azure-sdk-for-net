@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+
 using Newtonsoft.Json;
 
 namespace Microsoft.Azure.Entra.Authentication
@@ -10,7 +11,7 @@ namespace Microsoft.Azure.Entra.Authentication
     /// Response object to serialize from the custom extension call.
     /// Contains a list of <see cref="EventAction"/> depending on which action it was.
     /// </summary>
-    public class CustomExtensionCalloutResponseData : CustomExtensionData
+    public abstract class CustomExtensionCalloutResponseData : CustomExtensionData
     {
         /// <summary>
         /// Creates a CustomExtensionCalloutResponseData object.

@@ -9,7 +9,8 @@ namespace Microsoft.Azure.Entra.Authentication
     /// Request object for <see cref="EventType.OnTokenIssuanceStart"/>
     /// Containing <see cref="OnTokenIssuanceStartCalloutRequestData"/> as the <see cref="CustomExtensionData"/>.
     /// </summary>
-    public class OnTokenIssuanceStartCalloutRequest : CustomExtensionCalloutRequestTyped<OnTokenIssuanceStartCalloutRequestData>
+    [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
+    public class OnTokenIssuanceStartCalloutRequest : CustomExtensionCalloutRequest<OnTokenIssuanceStartCalloutRequestData>
     {
         /// <summary>
         /// Constructor for <see cref="EventType.OnTokenIssuanceStart"/>.

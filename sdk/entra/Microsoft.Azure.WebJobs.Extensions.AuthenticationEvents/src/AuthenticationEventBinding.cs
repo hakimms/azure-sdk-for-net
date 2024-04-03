@@ -142,7 +142,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents
             eventResponseHandler.Request = _parameterInfo.ParameterType == typeof(string) ? new EmptyRequest(request) : AuthenticationEventMetadata.CreateEventRequest(request, _parameterInfo.ParameterType, null);
             eventResponseHandler.Request.StatusMessage = ex.Message;
 
-            eventResponseHandler.Request.RequestStatus = ex switch
+            eventResponseHandler.Request.AuthenticationEventStatus = ex switch
             {
                 UnauthorizedAccessException => RequestStatusType.TokenInvalid,
                 ValidationException => RequestStatusType.ValidationError,
@@ -175,8 +175,8 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents
         /// <param name="tokenClaims">The token claims.</param>
         /// <returns>The related EventRequest based on the event requested.<br /></returns>
         /// <seealso cref="AuthenticationEventMetadata" />
-        /// <seealso cref="AuthenticationEventRequestBase" />
-        private AuthenticationEventRequestBase GetRequestForEvent(HttpRequestMessage request, string payload, AuthenticationEventMetadata eventMetadata, Dictionary<string, string> tokenClaims)
+        /// <seealso cref="AuthenticationEvent" />
+        private AuthenticationEvent GetRequestForEvent(HttpRequestMessage request, string payload, AuthenticationEventMetadata eventMetadata, Dictionary<string, string> tokenClaims)
             => GetRequestForEvent(request, payload, eventMetadata, tokenClaims, null);
 
         /// <summary>Gets the request for event.
@@ -189,10 +189,10 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents
         /// <returns>The related EventRequest based on the event requested.</returns>
         /// <exception cref="Exception">An exception is thrown if the IRequestEvent could not be determined from the incoming HTTP request message.</exception>
         /// <seealso cref="AuthenticationEventMetadata" />
-        /// <seealso cref="AuthenticationEventRequestBase" />
-        private AuthenticationEventRequestBase GetRequestForEvent(HttpRequestMessage request, string payload, AuthenticationEventMetadata eventMetaData, Dictionary<string, string> tokenClaims, Exception ex)
+        /// <seealso cref="AuthenticationEvent" />
+        private AuthenticationEvent GetRequestForEvent(HttpRequestMessage request, string payload, AuthenticationEventMetadata eventMetaData, Dictionary<string, string> tokenClaims, Exception ex)
         {
-            AuthenticationEventRequestBase requestEvent = eventMetaData?.CreateEventRequestValidate(request, payload, tokenClaims);
+            AuthenticationEvent requestEvent = eventMetaData?.CreateEventRequestValidate(request, payload, tokenClaims);
             if (requestEvent == null)
             {
                 throw new Exception(AuthenticationEventResource.Ex_Invalid_Event);
@@ -208,7 +208,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents
             }
 
             requestEvent.StatusMessage = ex == null ? AuthenticationEventResource.Status_Good : ex.Message;
-            requestEvent.RequestStatus = ex == null ? RequestStatusType.Successful : ex is UnauthorizedAccessException ? RequestStatusType.TokenInvalid : RequestStatusType.Failed;
+            requestEvent.AuthenticationEventStatus = ex == null ? RequestStatusType.Successful : ex is UnauthorizedAccessException ? RequestStatusType.TokenInvalid : RequestStatusType.Failed;
 
             return requestEvent;
         }

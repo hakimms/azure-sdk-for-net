@@ -5,29 +5,24 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace Microsoft.Azure.Entra.Authentication
+namespace Microsoft.Azure.Entra.Authentication.Converters
 {
-    /// <summary>
-    /// Event action object converter.
-    /// Ensures that the json is parsed into the proper subclass based on the type property.
-    /// </summary>
-    internal class EventActionConverter : DataJsonConverter<EventAction>
+    internal class CustomExtensionDataConvertor : DataJsonConverter<CustomExtensionData>
     {
         // map of all the allowed action types to their deserialization logic
-        private static readonly IReadOnlyDictionary<string, DeserializationFunc> EventActionConvertMap
+        private static readonly IReadOnlyDictionary<string, DeserializationFunc> CustomExtensionDataTypeMap
             = new ReadOnlyDictionary<string, DeserializationFunc>(
                 new Dictionary<string, DeserializationFunc>(StringComparer.InvariantCultureIgnoreCase)
                 {
                     // OnTokenIssuanceStart actions
-                    [ProvideClaimsForTokenAction.LegacyODataTypeName] = Convert<ProvideClaimsForTokenAction>,
-                    [ProvideClaimsForTokenAction.ODataTypeName] = Convert<ProvideClaimsForTokenAction>,
+                    [OnTokenIssuanceStartCalloutRequestData.GetODataString()] = Convert<OnTokenIssuanceStartCalloutRequestData>
                 });
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EventActionConverter"/> class.
         /// </summary>
-        public EventActionConverter()
-            : base(EventActionConvertMap)
+        public CustomExtensionDataConvertor()
+            : base(CustomExtensionDataTypeMap)
         {
         }
     }

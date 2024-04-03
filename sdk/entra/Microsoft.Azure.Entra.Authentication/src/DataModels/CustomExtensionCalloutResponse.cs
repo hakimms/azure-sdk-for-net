@@ -7,7 +7,8 @@ namespace Microsoft.Azure.Entra.Authentication
 {
     /// <summary>Data model for custom extension API response.</summary>
     [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
-    public class CustomExtensionCalloutResponse
+    public abstract class CustomExtensionCalloutResponse<TDataType>
+        where TDataType : CustomExtensionCalloutResponseData
     {
         /// <summary>Gets or sets the custom extension type.</summary>
         /// <value>The custom extension type.</value>
@@ -29,6 +30,6 @@ namespace Microsoft.Azure.Entra.Authentication
         /// </summary>
         /// <value>Data recieved from the custom extension.</value>
         [JsonProperty("data")]
-        public CustomExtensionCalloutResponseData Data { get; set; }
+        public TDataType Data { get; set; }
     }
 }

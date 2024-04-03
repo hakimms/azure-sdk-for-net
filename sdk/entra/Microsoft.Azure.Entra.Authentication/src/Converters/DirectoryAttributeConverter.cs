@@ -10,7 +10,7 @@ namespace Microsoft.Azure.Entra.Authentication
     /// <summary>
     /// Directory Attribute convertor. Use odataname to convert directory objects.
     /// </summary>
-    internal class DirectoryAttributeConverter : ODataJsonConverter<DirectoryAttribute>
+    internal class DirectoryAttributeConverter : DataJsonConverter<DirectoryAttribute>
     {
         // map of all the allowed action types to their deserialization logic
         private static readonly IReadOnlyDictionary<string, DeserializationFunc> DirectoryAttributeConvertMap

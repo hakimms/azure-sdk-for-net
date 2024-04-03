@@ -10,12 +10,22 @@ namespace Microsoft.Azure.Entra.Authentication
     /// This is shared by all authentication data event payloads.
     /// Individual events may have additional event-specific data.
     /// </summary>
+    [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
     public abstract class CustomExtensionCalloutRequestData : CustomExtensionData
     {
         /// <summary>
         /// Default Constructor for Json Deserialization.
         /// </summary>
         protected CustomExtensionCalloutRequestData()
+            : base()
+        {
+        }
+
+        /// <summary>
+        /// Default Constructor for Json Deserialization.
+        /// </summary>
+        protected CustomExtensionCalloutRequestData(string dataType)
+            : base(dataType)
         {
         }
 

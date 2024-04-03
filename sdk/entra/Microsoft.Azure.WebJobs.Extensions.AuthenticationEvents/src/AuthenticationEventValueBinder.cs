@@ -10,14 +10,14 @@ using System.Threading.Tasks;
 namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents
 {
     /// <summary>Our response value binder that has reference the EventResponse.</summary>
-    /// <seealso cref="AuthenticationEventRequestBase" />
+    /// <seealso cref="AuthenticationEvent" />
     internal class AuthenticationEventValueBinder : IValueBinder
     {
         private object _value;
         private readonly AuthenticationEventsTriggerAttribute _attr;
         /// <summary>Gets the type.</summary>
         /// <value>The type.</value>
-        public Type Type => _attr.IsParameterString ? typeof(string) : typeof(AuthenticationEventRequestBase);
+        public Type Type => _attr.IsParameterString ? typeof(string) : typeof(AuthenticationEvent);
 
         /// <summary>Initializes a new instance of the <see cref="AuthenticationEventValueBinder" /> class.</summary>
         /// <param name="value">The EventRequest event as the value.</param>
@@ -30,7 +30,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents
 
         /// <summary>Gets the value asynchronous.</summary>
         /// <returns>The EventRequest.<br /></returns>
-        /// <seealso cref="AuthenticationEventRequestBase" />
+        /// <seealso cref="AuthenticationEvent" />
         public Task<object> GetValueAsync()
         {
             return Task.FromResult(_value);
@@ -40,7 +40,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents
         /// <param name="value">The EventResponse as the value.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A task flagged as completed.</returns>
-        /// <seealso cref="AuthenticationEventRequestBase" />
+        /// <seealso cref="AuthenticationEvent" />
         public Task SetValueAsync(object value, CancellationToken cancellationToken)
         {
             _value = value;
@@ -49,7 +49,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents
 
         /// <summary>Converts to string.</summary>
         /// <returns>The string representation of the EventResponse.</returns>
-        /// <seealso cref="AuthenticationEventRequestBase" />
+        /// <seealso cref="AuthenticationEvent" />
         public string ToInvokeString()
         {
             return _value.ToString();

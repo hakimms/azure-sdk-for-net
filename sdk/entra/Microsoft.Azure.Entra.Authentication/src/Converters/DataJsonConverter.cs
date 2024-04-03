@@ -13,7 +13,7 @@ namespace Microsoft.Azure.Entra.Authentication
     /// Base class for all OData Json converters.
     /// </summary>
     /// <typeparam name="T">Type of the base class that sub types will be assigned to.</typeparam>
-    internal abstract class ODataJsonConverter<T> : JsonConverter<T>
+    internal abstract class DataJsonConverter<T> : JsonConverter<T>
     {
         // the deserialization delegate function
         protected delegate T DeserializationFunc(JObject jObject, JsonSerializer serializer);
@@ -37,10 +37,10 @@ namespace Microsoft.Azure.Entra.Authentication
         private readonly IReadOnlyDictionary<string, DeserializationFunc> convertMap;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ODataJsonConverter{T}"/> class.
+        /// Initializes a new instance of the <see cref="DataJsonConverter{T}"/> class.
         /// </summary>
         /// <param name="convertMap">The conversion map.</param>
-        protected ODataJsonConverter(IReadOnlyDictionary<string, ODataJsonConverter<T>.DeserializationFunc> convertMap)
+        protected DataJsonConverter(IReadOnlyDictionary<string, DataJsonConverter<T>.DeserializationFunc> convertMap)
         {
             this.convertMap = convertMap;
         }

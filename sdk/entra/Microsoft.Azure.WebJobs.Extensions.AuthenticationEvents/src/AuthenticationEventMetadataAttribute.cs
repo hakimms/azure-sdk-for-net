@@ -1,20 +1,21 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Framework;
 using System;
+
+using Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Framework;
 
 namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents
 {
     /// <summary>EventMetadata enum attribute that controls the related request object, schemas and json payloads</summary>
-    /// <seealso cref="AuthenticationEventRequest{T, K}" />
+    /// <seealso cref="AuthenticationEvent{T, K}" />
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
     public class AuthenticationEventMetadataAttribute : Attribute
     {
         /// <summary>Gets or sets the type of the request.</summary>
         /// <value>The type of the request.
         /// Which is must inherit EventRequest</value>
-        /// <seealso cref="AuthenticationEventRequest{T, K}" />
+        /// <seealso cref="AuthenticationEvent{T, K}" />
         internal Type RequestType { get; set; }
         /// <summary>Gets or sets the request schema.
         /// The name of the schema file in the event folder.</summary>
@@ -41,7 +42,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents
         /// <exception cref="Exception">If the requestType in not of type EventRequest</exception>
         internal AuthenticationEventMetadataAttribute(Type requestType, string eventIdentifier, string eventNamespace, string responseTemplate = "ResponseTemplate.json")
         {
-            if (!typeof(AuthenticationEventRequestBase).IsAssignableFrom(requestType))
+            if (!typeof(AuthenticationEvent).IsAssignableFrom(requestType))
             {
                 throw new Exception(AuthenticationEventResource.Ex_Invalid_EventType);
             }

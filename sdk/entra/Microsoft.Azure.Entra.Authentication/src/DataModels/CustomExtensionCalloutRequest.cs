@@ -1,13 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Microsoft.Azure.Entra.Authentication.Converters;
+
 using Newtonsoft.Json;
 
 namespace Microsoft.Azure.Entra.Authentication
 {
     /// <summary>The request format of the custom extension call to the user-defined external API.</summary>
     [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
-    public abstract class CustomExtensionCalloutRequest
+    public abstract class CustomExtensionCalloutRequest<TCustomExtensionData>
+        where TCustomExtensionData : CustomExtensionData
     {
         /// <summary>
         /// Base constructor to set type, source, and resourceAppId.
@@ -37,5 +40,12 @@ namespace Microsoft.Azure.Entra.Authentication
         /// <value>The custom extension identifier.</value>
         [JsonProperty(propertyName: "source", Order = -2)]
         public string Source { get; private set; }
+
+        /// <summary>Gets or sets data context object that is sent to the user-defined external
+        /// api when custom extension is configured for an event.</summary>
+        /// <value>The context object.</value>
+        [JsonProperty("data", Order = int.MaxValue)]
+        [JsonConverter(typeof(CustomExtensionDataConvertor))]
+        public TCustomExtensionData Data { get; set; }
     }
 }
